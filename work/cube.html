@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute  vec4 vPosition;
+attribute  vec4 vColor;
+varying vec4 fColor;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+uniform vec3 theta;
+
+void main()
+{
+    // Compute the sines and cosines of theta for each of
+    //   the three axes in one computation.
+    vec3 angles = radians( theta );
+    vec3 c = cos( angles );
+    vec3 s = sin( angles );
+
+    // Remeber: thse matrices are column-major
+    mat4 rx = mat4( 1.0,  0.0,  0.0, 0.0,
+		    0.0,  c.x,  s.x, 0.0,
+		    0.0, -s.x,  c.x, 0.0,
+		    0.0,  0.0,  0.0, 1.0 );
+
+    mat4 ry = mat4( c.y, 0.0, -s.y, 0.0,
+		    0.0, 1.0,  0.0, 0.0,
+		    s.y, 0.0,  c.y, 0.0,
+		    0.0, 0.0,  0.0, 1.0 );
+
+
+    mat4 rz = mat4( c.z, s.z, 0.0, 0.0,
+		    -s.z,  c.z, 0.0, 0.0,
+		    0.0,  0.0, 1.0, 0.0,
+		    0.0,  0.0, 0.0, 1.0 );
+
+    fColor = vColor;
+    gl_Position = rz * ry * rx * modelViewMatrix * projectionMatrix * vPosition;
+    gl_Position.z = -gl_Position.z;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec4 fColor;
+
+void
+main()
+{
+    gl_FragColor = fColor;
+}
+</script>
+
+        <div id="dynamicInput">
+            <select id="allObjects">
+
+            </select>
+        </div>
+
+<button id="Create new Object">Create new Object</button>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="someCode.js"></script>
+
+<body>
+<canvas id="gl-canvas" width="700"" height="700">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+
+<br/>
+
+<!-- Setting direction of rotation -->
+<button id= "xButton">Rotate X</button>
+<button id= "yButton">Rotate Y</button>
+<button id= "zButton">Rotate Z</button>
+<button id= "setNewSpeed">Speed</button>
+
+<br/>
+
+<!-- Select type of object -->
+<select id="Figure">
+    <option value="conus">Conus</option>
+    <option value="sphere">Sphere</option>
+    <option value="cube">Cube</option>
+    <option value="cylinder">Cylinder</option>
+</select>
+
+<!-- Select how object must be drawn -->
+<select id="How to show">
+    <option value="1">Fill with Triangles</option>
+    <option value="0">Just lines</option>
+</select>
+
+<br/>
+
+<!-- Set position of object in space -->
+X : <input type="text" id="someX" class="myInput" value="0" />
+Y : <input type="text" id="someY" class="myInput" value="0" />
+Z : <input type="text" id="someZ" class="myInput" value="0" />
+
+<br/>
+
+<!-- Buttons to set size of figure and speed of her rotation -->
+Radius of figure:<input type="text" id="someR" class="myInput" value="0.1"/>
+Speed of rotation:<input type="text" id="someSp" class="myInput" value="1"/>
+
+<br/>
+
+Name of figure:<input type="text" id="NameOfFigure" class="myInput" value="someName" />
+
+<br/>
+
+<label>R: <input id="someRed" type="range" min="0" max="50" value="0"></label>
+<label>G: <input id="someGreen" type="range" min="0" max="50" value="0"></label>
+<label>B: <input id="someBlue" type="range" min="0" max="50" value="0"></label>
+
+<select id="HowToColor">
+        <option value="1">Set a color</option>
+        <option value="0">Random</option>
+</select>
+
+<!-- Buttons for work with camera -->
+<p> </p>
+<!-- Moving from -->
+<button id = "Button1">Increase Z</button>
+<!-- Moving closer -->
+<button id = "Button2">Decrease Z</button>
+<button id = "Button3">Increase R</button>
+<button id = "Button4">Decrease R</button>
+<p> </p>
+<!-- Move camera to the up/down -->
+<button id = "Button5">Increase theta</button>
+<button id = "Button6">Decrease theta</button>
+<!-- Move camera to the left -->
+<button id = "Button7">Increase phi</button>
+<!-- Move camera to the right -->
+<button id = "Button8">Decrease phi</button>
+<p> </p>
+
+></body>
+</html>
